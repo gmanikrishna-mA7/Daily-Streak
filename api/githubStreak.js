@@ -54,9 +54,13 @@ export function getGitHubConfig(envOverride = {}) {
   const owner = envOverride.GITHUB_OWNER || process.env.GITHUB_OWNER || '';
   const repo = envOverride.GITHUB_REPO || process.env.GITHUB_REPO || '';
   const branch = envOverride.GITHUB_BRANCH || process.env.GITHUB_BRANCH || 'main';
+  const email =
+    envOverride.GITHUB_EMAIL ||
+    process.env.GITHUB_EMAIL ||
+    '216665873+gmanikrishna-mA7@users.noreply.github.com';
 
   const isConfigured = Boolean(token && owner && repo);
-  return { token, owner, repo, branch, isConfigured };
+  return { token, owner, repo, branch, email, isConfigured };
 }
 
 /**
@@ -143,7 +147,15 @@ export async function completeDayOnGitHub(config, dateString, retryOnConflict = 
   const payload = {
     message: commitMessage,
     content: base64Content,
-    branch
+    branch,
+    author: {
+      name: owner,
+      email: config.email
+    },
+    committer: {
+      name: owner,
+      email: config.email
+    }
   };
 
   // If file already exists, sha is REQUIRED for GitHub Contents API
